@@ -20,7 +20,11 @@ Lets use a node 8 base image and create an app folder that will hold our source 
 
 We are going to be able to modify the source code files in our computer and it will automatically reflect the changes to the docker image, using the live reload functionality.
 
-<iframe src="https://medium.com/media/b631a820a9497b35ed17824b36a98e61" frameborder=0></iframe>
+```yml
+FROM node:8
+RUN mkdir /usr/src/app
+WORKDIR /usr/src/app
+```
 
 ## 2) Create docker compose file
 
@@ -30,13 +34,58 @@ We are using the Dockerfile that we created earlier, we are using the volume tag
 
 Finally, we use the entrypoint so that the container doesn’t exit.
 
-<iframe src="https://medium.com/media/3d9b75b15105986a3c77327d0d1d6cf9" frameborder=0></iframe>
+```yml
+version: '2'
+
+services:
+  react-web:
+    image: react-web
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 3000:3000
+    volumes:
+      - ./:/usr/src/app
+entrypoint: "tail -f /dev/null"
+```
 
 ## 3) Create the Makefile
 
 Lest create a Makefile that is going to hold the commands to start, stop the image. Also, it is going to have the commands to install and start the app
 
-<iframe src="https://medium.com/media/b77fdcbe99067ca270fb35afe5fa945b" frameborder=0></iframe>
+```yml
+IMAGE_NAME     := react-web
+
+install:
+	@yarn install
+
+start:
+	@yarn run start
+
+.started:
+	@docker-compose build
+	@docker-compose up -d
+	@touch .started
+	@echo "Docker containers are now running."
+
+start-docker-image: .started
+
+# Alias for watch
+serve: watch
+
+# Start the website on port 3000
+watch: .started
+	@docker-compose exec $(IMAGE_NAME) make install
+	@docker-compose exec $(IMAGE_NAME) make start
+
+stop:
+	@docker-compose kill
+	@docker-compose stop
+	@docker-compose down --rmi local
+	@docker-compose rm -f
+    -@rm .started
+```
 
 ## 4) Start the app
 
