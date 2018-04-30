@@ -9,9 +9,7 @@
   },
   "keywords": [
     "create-react-app",
-    "reason-react",
-    "Bucklescript",
-    "ReasonML",
+    "react",
     "Digital Ocean",
     "ubuntu",
     "Dockerfile",
