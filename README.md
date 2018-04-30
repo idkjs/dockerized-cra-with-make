@@ -1,4 +1,4 @@
-# How to dockerize your ReactJS app for development
+# How to dockerize your ReactJS app for development in a container
 
 [source](https://medium.com/@thexap/how-to-dockerize-your-reactjs-app-ad618a48ad6b)
 
